@@ -16,7 +16,8 @@ Orientation = Literal['Landscape', 'Portrait', 'Square', 'Any orientation']
 
 
 class UnsplashPage(BasePage):
-    """Represents page from https://unsplash.com"""
+    """Represents page from https://unsplash.com with methods that is needed
+    for downloading image"""
 
     __slots__ = ('driver', 'monitor', 'orientation')
 
@@ -41,11 +42,11 @@ class UnsplashPage(BasePage):
         By.XPATH,
         '//div[@data-test="search-photos-route"]//img'
     )
-    IMAGE_SIZES_DROPDOWN = (
+    IMAGE_SIZES_DROPDOWN: tuple = (
         By.XPATH,
         '//div[@id="popover-download-button"]//button'
     )
-    IMAGE_SIZES = (
+    IMAGE_SIZES: tuple = (
         By.XPATH,
         '//div[@class="_2HZSj _2_izy _16e5w _12nqk _2YS8p"]//li'
     )
@@ -56,7 +57,9 @@ class UnsplashPage(BasePage):
         self.orientation: str = self.__determine_orientation()
 
     def __determine_orientation(self) -> Orientation:
-        """Retrun orientation in string representation"""
+        """Retrun orientation in string representation.
+
+        Returns same names as in dropdown list on page"""
         if self.monitor.width > self.monitor.height:
             return 'Landscape'
         elif self.monitor.width < self.monitor.height:
@@ -77,26 +80,26 @@ class UnsplashPage(BasePage):
     def choose_orientation(self) -> None:
         """Choose orientation from dropdown unordered list on page"""
         # Open orientation chooser
-        self.find_element(self.ORIENTATION_DROPDOWN).click()
+        self.click(self.find_element(self.ORIENTATION_DROPDOWN))
 
         # Find needed orientation from list and click it
         orientation_list_items = self.find_elements(
             self.ORIENTATION_LIST_ITEMS)
         for elem in orientation_list_items:
             if elem.text == self.orientation:
-                elem.click()
+                self.click(elem)
                 break
 
     def choose_sort_by_newest(self):
         """Choose sorting order from dropdown unordered list on page"""
         # Open 'sort by' chooser
-        self.find_element(self.SORTBY_DROPDOWN).click()
+        self.click(self.find_element(self.SORTBY_DROPDOWN))
 
         # Select 'Newest' from list
         sortby_list_items = self.find_elements(self.SORTBY_LIST_ITEMS)
         for elem in sortby_list_items:
             if elem.text == 'Newest':
-                elem.click()
+                self.click(elem)
                 break
 
     def get_list_of_images(self) -> List[WebElement]:
@@ -109,15 +112,19 @@ class UnsplashPage(BasePage):
         monitor size"""
         # Choose image from list of images and click on it
         random_image = choice(self.get_list_of_images())
-        random_image.click()
+        ok = self.click(random_image)
+        if not ok:
+            print('Can\'t click on image')
+            random_image = choice(self.get_list_of_images())
+            self.click(random_image)
 
         # Click on the dropdown button and select the closest value
-        self.find_element(self.IMAGE_SIZES_DROPDOWN).click()
+        self.click(self.find_element(self.IMAGE_SIZES_DROPDOWN))
         image_sizes = self.find_elements(self.IMAGE_SIZES)
 
         def get_sizes_difference(size_web_element):
             size = tuple(size_web_element.text.split(' ')[-1]
-                         .removeprefix('(').removesuffix(')').split('x'))  
+                         .removeprefix('(').removesuffix(')').split('x'))
             return abs(
                 abs(int(size[0]) - self.monitor.width)
                 - abs(int(size[1]) - self.monitor.height)
@@ -125,4 +132,4 @@ class UnsplashPage(BasePage):
 
         # Get closest value from list to screen size
         closest_value = min(image_sizes, key=get_sizes_difference)
-        closest_value.click()
+        self.click(closest_value)

@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Union
 
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -10,6 +10,11 @@ from clients.configs import DefaultConfig
 
 
 class BasePage:
+    """Base page for page object pattern realization.
+
+    Has methods that wraps default methods from selenium"""
+
+    __slots__ = ('driver')
 
     def __init__(self, driver):
         self.driver = driver
@@ -25,16 +30,18 @@ class BasePage:
     def find_elements(
         self, locator,
         timeout=DefaultConfig.TIMEOUT,
-        depth=0
-    ) -> Optional[List[WebElement]]:
+    ) -> List[WebElement]:
+        return WebDriverWait(self.driver, timeout).until(
+            EC.presence_of_all_elements_located(locator)
+        )
+
+    def click(self, web_element: WebElement, depth: int = 0) -> bool:
+        if depth > 4:
+            return False
         try:
-            elems = WebDriverWait(self.driver, timeout).until(
-                EC.presence_of_all_elements_located(locator)
-            )
+            web_element.click()
+            return True
         except ElementNotInteractableException:
-            if depth >= 4:
-                return []
-            html = self.driver.find_element_by_tag_name('html')
-            html.send_keys(Keys.PAGE_DOWN)
-            elems = self.find_elements(locator, depth=depth + 1)
-        return elems
+            page = self.driver.find_element_by_tag_name('html')
+            page.send_keys(Keys.PAGE_DOWN)
+            return self.click(web_element, depth=depth + 1)
