@@ -15,3 +15,8 @@ python run_wallpee.py [options] [args]
 + -h, --help - help message
 + -v, --version - version of wallpee
 + -p PATH, --path PATH - specify path for downloaded images
+If ran without -p option then default path will be used ($HOME directory)
+
+### Platforms:
++ Linux
++ Maybe MacOS
