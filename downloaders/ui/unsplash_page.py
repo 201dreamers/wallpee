@@ -1,25 +1,21 @@
 from random import choice
-from typing import Literal, List
+from typing import List
 
-from screeninfo import get_monitors
-from screeninfo.common import Monitor
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 
-from clients.basis.base_page import BasePage
-from clients.configs import UnsplashConfig
-
-
-Orientation = Literal['Landscape', 'Portrait', 'Square', 'Any orientation']
+from downloaders.ui.base_page import BasePage
+from config import UnsplashConfig
+from misc import determine_screen_orientation
 
 
 class UnsplashPage(BasePage):
     """Represents page from https://unsplash.com with methods that is needed
     for downloading image"""
 
-    __slots__ = ('driver', 'monitor', 'orientation')
+    __slots__ = ('driver', 'orientation')
 
     SEARCH_FIELD: tuple = (By.NAME, 'searchKeyword')
     ORIENTATION_DROPDOWN: tuple = (
@@ -53,20 +49,7 @@ class UnsplashPage(BasePage):
 
     def __init__(self, driver: WebDriver) -> None:
         super().__init__(driver)
-        self.monitor: Monitor = get_monitors()[0]
-        self.orientation: str = self.__determine_orientation()
-
-    def __determine_orientation(self) -> Orientation:
-        """Retrun orientation in string representation.
-
-        Returns same names as in dropdown list on page"""
-        if self.monitor.width > self.monitor.height:
-            return 'Landscape'
-        elif self.monitor.width < self.monitor.height:
-            return 'Portrait'
-        elif self.monitor.width == self.monitor.height:
-            return 'Square'
-        return 'Any orientation'
+        self.orientation: str = determine_screen_orientation().capitalize()
 
     def open_page(self) -> None:
         """Open main page of site unsplash.com"""
@@ -113,8 +96,8 @@ class UnsplashPage(BasePage):
         # Choose image from list of images and click on it
         random_image = choice(self.get_list_of_images())
         ok = self.click(random_image)
+        # If can't click on image choose another and try to click
         if not ok:
-            print('Can\'t click on image')
             random_image = choice(self.get_list_of_images())
             self.click(random_image)
 

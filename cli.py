@@ -10,12 +10,17 @@ def parse_cli_args() -> Values:
     optparser = OptionParser(usage='usage: wallpee [options] path_for_image')
 
     optparser.add_option(
-        '-v', '--version',
-        action='store_true', help='Show version of wallpee'
+        '-v', '--version', action='store_true',
+        default=False, help='Show version of wallpee'
     )
     optparser.add_option(
-        '-p', '--path', metavar='PATH',
-        action='store', help='Specify path for downloaded images'
+        '-p', '--path', metavar='PATH', action='store',
+        help='Specify path for downloaded images'
+    )
+    optparser.add_option(
+        '-s', '--selenium', action='store_true',
+        default=False, help=('Use selenium for dowloading image instead'
+                             ' of parsing with BeautifulSoup')
     )
     options, args = optparser.parse_args()
     return options
