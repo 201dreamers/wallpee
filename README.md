@@ -1,12 +1,13 @@
 # Wallpee
 ---
-Wallpee is cli (in the future may be gui) app that downloads images for desktop wallpapers that suits your laptop or PC screen. Project is under development.
-(I know that there are better tools for writing this app but I want to learn selenium better)
+Wallpee is cli (in the future may be gui) app that downloads images for desktop wallpapers that fits your laptops or PCs screen. Project is under development.
 
 ## Dependencies:
 + firefox and geckodriver
-+ selenium (PyPi)
++ requests (PyPi)
 + screeninfo (PyPi)
++ fake-useragent (PyPi)
++ BeautifulSoup4 [bs4] (PyPi)
 
 ## Running:
 python run_wallpee.py [options] [args]
@@ -19,4 +20,4 @@ If ran without -p option then default path will be used ($HOME directory)
 
 ### Platforms:
 + Linux
-+ Maybe MacOS
++ Maybe MacOS, not tested yet
