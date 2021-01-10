@@ -7,7 +7,7 @@ def parse_cli_args() -> Values:
     """Function that parses arguments and keys from command line interface
     returns dict with options and its values
     """
-    optparser = OptionParser(usage='usage: wallpee [options] path_for_image')
+    optparser = OptionParser(usage='usage: wallpee [options] [path_for_image]')
 
     optparser.add_option(
         '-v', '--version', action='store_true',
@@ -17,10 +17,6 @@ def parse_cli_args() -> Values:
         '-p', '--path', metavar='PATH', action='store',
         help='Specify path for downloaded images'
     )
-    optparser.add_option(
-        '-s', '--selenium', action='store_true',
-        default=False, help=('Use selenium for dowloading image instead'
-                             ' of parsing with BeautifulSoup')
-    )
+
     options, args = optparser.parse_args()
     return options

@@ -22,4 +22,5 @@ class UnsplashConfig(DefaultConfig):
     __slots__ = ()
 
     URL = 'https://unsplash.com'
-    KEYWORDS = ('wallpaper', 'background')
+    KEYWORDS = ('wallpaper', 'desktop-background', 'desktop-wallpaper')
+    IMAGE_WIDTHS = (640, 1920, 2400)
